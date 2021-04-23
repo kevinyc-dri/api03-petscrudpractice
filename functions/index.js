@@ -24,18 +24,18 @@ app.get('/pets', (req, res) => { // this gets all
       const arrayOfPets = []
       allPets.forEach(pet => {
         arrayOfPets.push(pet.data())
-        console.log('this is an array of pets ', arrayOfPets)
+        // console.log(arrayOfPets)
       })
+      res.send(arrayOfPets)
     })
 })
 
 app.post('/addpet', (req, res) => {
   connectToFirebase()
-  // console.log(req.body)
   const newPet = req.body
   db.collection('pets')
     .add(newPet)
-    .then(() => console.log('new pet added', newPet))
+    .then(() => res.send(newPet))
     .catch(err => console.err(err))
 })
 
@@ -48,6 +48,17 @@ app.get('/onepet/:petId', (req, res) => {
     .doc(passedPetId)
     .get()
     .then(thePet => console.log(thePet.data()))
+    .catch(err => console.err(err))
+})
+
+app.post('/updatepet/:petId', (req, res) => {
+  connectToFirebase()
+  const updatedPetId = req.params.petId
+
+  db.collection('pets').doc(req.params.petId).update(updatedPetId)
+    // .then(updatePet = req.params.petId)
+    .then(() => this.getTasks(req, res))
+    .catch(err => console.err(err))
 })
 
 exports.app = functions.https.onRequest(app)
